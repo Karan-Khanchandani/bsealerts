@@ -7,7 +7,7 @@ deploy:
     secure: $SECRETACCESSKEY
   region: "ap-south-1"
   app: "bsealerts"
-  env: " Bsealerts-env"
+  env: "bsealerts-env1"
   bucket_name: "elasticbeanstalk-ap-south-1-241367457943"
   on:
     branch: master
