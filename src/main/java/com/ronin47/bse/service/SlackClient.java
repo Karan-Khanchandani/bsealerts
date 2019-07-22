@@ -16,7 +16,7 @@ public class SlackClient {
     private SlackSession slackSession;
 
     public SlackClient() {
-        String slackToken = System.getProperty("SLACK_TOKEN");
+        String slackToken = System.getenv("SLACK_TOKEN");
         System.out.println("Slack token " + slackToken);
         this.slackSession = SlackSessionFactory.createWebSocketSlackSession(slackToken);
     }
