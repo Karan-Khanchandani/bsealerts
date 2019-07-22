@@ -2,19 +2,15 @@ package com.ronin47.bse.service;
 
 import com.ronin47.bse.domain.BseApiResponse;
 import com.ullink.slack.simpleslackapi.SlackPreparedMessage;
+import org.glassfish.grizzly.http.server.util.ClassLoaderUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.net.URL;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -38,13 +34,14 @@ public class ReadNotificationsMap {
             if(readMap == null){
                 readMap = new HashMap<>();
             }
-            URL resource = this.getClass().getClassLoader().getResource("stocks.txt");
-            FileReader fileReader = new FileReader(resource.getFile());
-            BufferedReader br = new BufferedReader(fileReader);
-
+            String resourceName = "stocks.txt"; // could also be a constant
+            ClassLoader loader = Thread.currentThread().getContextClassLoader();
+            Properties props = new Properties();
+            try(InputStream resourceStream = loader.getResourceAsStream(resourceName)) {
+                props.load(resourceStream);
+            }
             Long stockId;
-            String stock;
-            while ((stock = br.readLine()) != null) {
+            for (String stock : props.stringPropertyNames()) {
                 stockId = Long.valueOf(stock);
                 if(!readMap.containsKey(stockId)){
                     readMap.put(stockId, null);
