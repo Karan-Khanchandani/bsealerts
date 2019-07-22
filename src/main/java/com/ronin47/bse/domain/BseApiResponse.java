@@ -1,6 +1,10 @@
 package com.ronin47.bse.domain;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import com.google.gson.annotations.SerializedName;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -36,79 +40,83 @@ public class BseApiResponse {
 //            "SLONGNAME": "JINDAL STEEL & POWER LTD.",
 //            "AGENDA_ID": 65,
 
-    @JsonProperty()
+    @JsonProperty("NEWSID")
     @SerializedName("NEWSID")
     private String newsId;
 
-    @JsonProperty()
+    @JsonProperty("SCRIP_CD")
     @SerializedName("SCRIP_CD")
     private Long scriptId;
 
-    @JsonProperty()
+    @JsonProperty("XML_NAME")
     @SerializedName("XML_NAME")
     private String xmlName;
 
-    @JsonProperty()
+    @JsonProperty("NEWSSUB")
     @SerializedName("NEWSSUB")
     private String newsSub;
 
-    @JsonProperty()
+    @JsonProperty("DT_TM")
     @SerializedName("DT_TM")
+    @JsonSerialize(using = LocalDateTimeSerializer.class)
+    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     private LocalDateTime dateTime;
 
-    @JsonProperty()
+    @JsonProperty("NEWS_DT")
     @SerializedName("NEWS_DT")
+    @JsonSerialize(using = LocalDateTimeSerializer.class)
+    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     private LocalDateTime newsDateTime;
 
-    @JsonProperty()
+    @JsonProperty("CRITICALNEWS")
     @SerializedName("CRITICALNEWS")
     private Integer criticalNews;
 
-    @JsonProperty()
+    @JsonProperty("ANNOUNCEMENT_TYPE")
     @SerializedName("ANNOUNCEMENT_TYPE")
     private String announcementType;
 
-    @JsonProperty()
+    @JsonProperty("QUARTER_ID")
     @SerializedName("QUARTER_ID")
     private String quarterId;
 
-    @JsonProperty()
+    @JsonProperty("FILESTATUS")
     @SerializedName("FILESTATUS")
     private String fileStatus;
 
-    @JsonProperty()
+    @JsonProperty("ATTACHMENTNAME")
     @SerializedName("ATTACHMENTNAME")
     private String attachmentName;
 
-    @JsonProperty()
+    @JsonProperty("HEADLINE")
     @SerializedName("HEADLINE")
     private String headline;
 
-    @JsonProperty()
+    @JsonProperty("CATEGORYNAME")
     @SerializedName("CATEGORYNAME")
     private String categoryName;
 
-    @JsonProperty()
+    @JsonProperty("OLD")
     @SerializedName("OLD")
     private Integer old;
 
-    @JsonProperty()
+    @JsonProperty("RN")
     @SerializedName("RN")
     private Integer rn;
 
-    @JsonProperty()
+    @JsonProperty("PDFFLAG")
     @SerializedName("PDFFLAG")
     private Integer pdfFlag;
 
-    @JsonProperty()
+    @JsonProperty("NSURL")
     @SerializedName("NSURL")
     private String nsUrl;
 
-    @JsonProperty()
+    @JsonProperty("SLONGNAME")
     @SerializedName("SLONGNAME")
     private String slongName;
 
-    @JsonProperty()
+    @JsonProperty("AGENDA_ID")
     @SerializedName("AGENDA_ID")
     private Integer agendaId;
 }

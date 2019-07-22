@@ -1,5 +1,6 @@
 package com.ronin47.bse;
 
+import com.ronin47.bse.service.GetAlerts;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
