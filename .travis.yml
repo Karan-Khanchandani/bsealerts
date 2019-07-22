@@ -1,5 +1,6 @@
 install: gradle wrapper
 language: java
+before_deploy: "./gradlew clean build"
 deploy:
   provider: elasticbeanstalk
   skip_cleanup: true
