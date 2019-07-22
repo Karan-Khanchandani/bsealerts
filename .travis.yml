@@ -2,12 +2,14 @@ install: gradle wrapper
 language: java
 deploy:
   provider: elasticbeanstalk
+  skip_cleanup: true
   access_key_id: $ACCESSKEYID
   secret_access_key:
     secure: $SECRETACCESSKEY
   region: "ap-south-1"
   app: "bsealerts"
   env: "bsealerts-env1"
+  zip_file: "build/libs/bse-0.0.1-SNAPSHOT.jar"
   bucket_name: "elasticbeanstalk-ap-south-1-241367457943"
   on:
     branch: master
