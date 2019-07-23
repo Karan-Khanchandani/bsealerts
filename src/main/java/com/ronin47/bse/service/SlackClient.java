@@ -33,7 +33,17 @@ public class SlackClient {
             sb.append(response.getNewsDateTime().format(DateTimeFormatter.ofPattern("dd MMM yyyy,  hh:mm:ss a")));
             slackSession.sendMessage(slackChannel, sb.toString());
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("Error while sending message from slack {}", e.getMessage());
+        }
+    }
+
+    public void sendExceptionMessage(String exception){
+        try{
+            slackSession.connect();
+            SlackChannel slackChannel = slackSession.findChannelByName("bsealertsexception");
+            slackSession.sendMessage(slackChannel, exception);
+        }catch (Exception e){
+            logger.error("Error while sending exception from slack {}", e.getMessage());
         }
     }
 }

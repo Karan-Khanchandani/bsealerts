@@ -37,16 +37,18 @@ public class ReadNotificationsMap {
             String resourceName = "stocks.txt"; // could also be a constant
             ClassLoader loader = Thread.currentThread().getContextClassLoader();
             Properties props = new Properties();
-            try(InputStream resourceStream = loader.getResourceAsStream(resourceName)) {
-                props.load(resourceStream);
-            }
+            InputStream resourceStream = loader.getResourceAsStream(resourceName);
+            props.load(resourceStream);
+
             Long stockId;
-            for (String stock : props.stringPropertyNames()) {
+            for (Object stk : props.values()) {
+                String stock = String.valueOf(stk);
                 stockId = Long.valueOf(stock);
                 if(!readMap.containsKey(stockId)){
                     readMap.put(stockId, null);
                 }
             }
+
             scheduledExecutorService = Executors.newScheduledThreadPool(1);
             scheduledExecutorService.scheduleAtFixedRate(new Runnable() {
                 @Override
@@ -68,6 +70,7 @@ public class ReadNotificationsMap {
                 }
             }, 0, 5, TimeUnit.SECONDS);
         } catch (Exception e) {
+            slackClient.sendExceptionMessage(e.getMessage());
             logger.error("Error while fetching API {}", e);
         }
     }
