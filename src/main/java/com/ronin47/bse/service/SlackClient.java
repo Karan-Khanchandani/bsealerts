@@ -31,6 +31,9 @@ public class SlackClient {
             sb.append(response.getNsUrl());
             sb.append("\n");
             sb.append(response.getNewsDateTime().format(DateTimeFormatter.ofPattern("dd MMM yyyy,  hh:mm:ss a")));
+            sb.append("\n");
+            String directLink = "https://www.bseindia.com/corporates/anndet_new.aspx?newsid="+response.getNewsId();
+            sb.append(directLink);
             slackSession.sendMessage(slackChannel, sb.toString());
         } catch (Exception e) {
             logger.error("Error while sending message from slack {}", e.getMessage());
