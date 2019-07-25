@@ -2,13 +2,17 @@ package com.ronin47.bse.service;
 
 import com.ronin47.bse.domain.BseApiResponse;
 import com.ullink.slack.simpleslackapi.SlackChannel;
+import com.ullink.slack.simpleslackapi.SlackPreparedMessage;
 import com.ullink.slack.simpleslackapi.SlackSession;
 import com.ullink.slack.simpleslackapi.impl.SlackSessionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
+import java.io.IOException;
 import java.time.format.DateTimeFormatter;
+import java.util.concurrent.TimeUnit;
 
 @Component
 public class SlackClient {
@@ -18,12 +22,27 @@ public class SlackClient {
     public SlackClient() {
         String slackToken = System.getenv("SLACK_TOKEN");
         System.out.println("Slack token " + slackToken);
-        this.slackSession = SlackSessionFactory.createWebSocketSlackSession(slackToken);
+        SlackSessionFactory.SlackSessionFactoryBuilder builder = SlackSessionFactory.getSlackSessionBuilder(slackToken);
+        builder.withConnectionHeartbeat(15, TimeUnit.SECONDS);
+        builder.withAutoreconnectOnDisconnection(true);
+        this.slackSession = builder.build();
+
     }
 
-    public void sendMessage(BseApiResponse response) {
+    @PostConstruct
+    public void connect(){
         try {
             slackSession.connect();
+            sendExceptionMessage("rrrr");
+        } catch (IOException e) {
+            logger.error("Connection to slack failed");
+        }
+    }
+
+    public boolean sendMessage(BseApiResponse response) {
+        try {
+            //Rate limit for sending the message is 1s
+            Thread.sleep(1000);
             SlackChannel slackChannel = slackSession.findChannelByName("bsealerts");
             StringBuilder sb = new StringBuilder();
             sb.append("*" + response.getNewsSub() + "*");
@@ -34,19 +53,20 @@ public class SlackClient {
             sb.append("\n");
             String directLink = "https://www.bseindia.com/corporates/anndet_new.aspx?newsid="+response.getNewsId();
             sb.append(directLink);
-            slackSession.sendMessage(slackChannel, sb.toString());
+            return slackSession.sendMessage(slackChannel, sb.toString()).getReply().isOk();
         } catch (Exception e) {
             logger.error("Error while sending message from slack {}", e.getMessage());
+            return false;
         }
     }
 
-    public void sendExceptionMessage(String exception){
+    public boolean sendExceptionMessage(String exception){
         try{
-            slackSession.connect();
             SlackChannel slackChannel = slackSession.findChannelByName("bsealertsexception");
-            slackSession.sendMessage(slackChannel, exception);
+            return slackSession.sendMessage(slackChannel, exception).getReply().isOk();
         }catch (Exception e){
             logger.error("Error while sending exception from slack {}", e.getMessage());
+            return false;
         }
     }
 }

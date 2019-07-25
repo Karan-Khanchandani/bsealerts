@@ -1,16 +1,16 @@
 package com.ronin47.bse.service;
 
 import com.ronin47.bse.domain.BseApiResponse;
-import com.ullink.slack.simpleslackapi.SlackPreparedMessage;
-import org.glassfish.grizzly.http.server.util.ClassLoaderUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
-import java.io.*;
-import java.net.URL;
-import java.util.*;
+import java.io.InputStream;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -31,7 +31,7 @@ public class ReadNotificationsMap {
     @PostConstruct
     public void construct() {
         try {
-            if(readMap == null){
+            if (readMap == null) {
                 readMap = new HashMap<>();
             }
             String resourceName = "stocks.txt"; // could also be a constant
@@ -44,25 +44,23 @@ public class ReadNotificationsMap {
             for (Object stk : props.values()) {
                 String stock = String.valueOf(stk);
                 stockId = Long.valueOf(stock);
-                if(!readMap.containsKey(stockId)){
+                if (!readMap.containsKey(stockId)) {
                     readMap.put(stockId, null);
                 }
             }
 
             scheduledExecutorService = Executors.newScheduledThreadPool(1);
-            scheduledExecutorService.scheduleAtFixedRate(new Runnable() {
-                @Override
-                public void run() {
-                    logger.info("Calling API");
-                    List<BseApiResponse> responses = getAlertsService.getDetailsFromApi();
-                    if(responses != null){
-                        for(BseApiResponse response : responses){
-                            if(readMap.containsKey(response.getScriptId())){
-                                BseApiResponse mapResponse = readMap.get(response.getScriptId());
-                                if(mapResponse == null || response.getNewsDateTime().isAfter(mapResponse.getNewsDateTime())){
+            scheduledExecutorService.scheduleAtFixedRate(() -> {
+                logger.info("Calling API");
+                List<BseApiResponse> responses = getAlertsService.getDetailsFromApi();
+                if (responses != null) {
+                    for (BseApiResponse response : responses) {
+                        if (readMap.containsKey(response.getScriptId())) {
+                            BseApiResponse mapResponse = readMap.get(response.getScriptId());
+                            if (mapResponse == null || response.getNewsDateTime().isAfter(mapResponse.getNewsDateTime())) {
+                                boolean isMessageSent = slackClient.sendMessage(response);
+                                if (isMessageSent) {
                                     readMap.put(response.getScriptId(), response);
-
-                                    slackClient.sendMessage(response);
                                 }
                             }
                         }
