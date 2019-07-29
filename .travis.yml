@@ -9,8 +9,8 @@ deploy:
     secure: $SECRETACCESSKEY
   region: "ap-south-1"
   app: "bsealerts"
-  env: "bsealerts-env1"
+  env: "bsealerts-dev"
   zip_file: "build/libs/bse-0.0.1-SNAPSHOT.jar"
-  bucket_name: "elasticbeanstalk-ap-south-1-241367457943"
+  bucket_name: "elasticbeanstalk-ap-south-1-322867968815"
   on:
     branch: master

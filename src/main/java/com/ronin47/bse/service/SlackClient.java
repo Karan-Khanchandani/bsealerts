@@ -33,7 +33,6 @@ public class SlackClient {
     public void connect(){
         try {
             slackSession.connect();
-            sendExceptionMessage("rrrr");
         } catch (IOException e) {
             logger.error("Connection to slack failed");
         }
